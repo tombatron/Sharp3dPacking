@@ -11,7 +11,9 @@ public class Position
     internal Position(decimal x, decimal y, decimal z)
     {
         X = x;
-        Y = z;
+        Y = y;
         Z = z;
     }
+
+    public override string ToString() => $"x:{X},y:{Y},z:{Z}";
 }

@@ -4,6 +4,10 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Sharp3dPacking</Title>
+        <Authors>Tom Hanks</Authors>
+        <Description>Library for performing 3D bin packing.</Description>
     </PropertyGroup>
 
 </Project>

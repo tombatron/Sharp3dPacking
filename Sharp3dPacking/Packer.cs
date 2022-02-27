@@ -1,27 +1,41 @@
-﻿namespace Sharp3dPacking;
+﻿using System.Collections.ObjectModel;
+
+namespace Sharp3dPacking;
 
 public class Packer
 {
     private List<Bin> _bins = new();
     private List<Item> _items = new();
     private int _unfitItems = 0;
-    private int _totalItems = 0;
+    private int _totalItems;
+
+    public ReadOnlyCollection<Bin> Bins => new(_bins);
+
+    public ReadOnlyCollection<Item> Items => new(_items);
+
+    public int TotalItems => _totalItems;
+
+    public int UnfitItems => _unfitItems;
 
     public void AddBin(Bin bin) => _bins.Add(bin);
+
+    public void AddBin(string name, decimal width, decimal height, decimal depth, decimal maximumWeightCapacity) =>
+        AddBin(new Bin(name, width, height, depth, maximumWeightCapacity));
 
     public void AddItem(Item item)
     {
         _totalItems++;
-        
+
         _items.Add(item);
     }
 
+    public void AddItem(string name, decimal width, decimal height, decimal depth, decimal weight) =>
+        AddItem(new Item(name, width, height, depth, weight));
     public void Pack(bool biggerFirst = false, bool distributeItems = false)
     {
-        // TODO: Sort bins... biggerFirst will essentially be descending...
-        var sortedBins = _bins;
-        // TODO: Sort items...
-        var sortedItems = _items;
+        var sortedBins = (biggerFirst ? _bins.OrderByDescending(x => x.Volume) : _bins.OrderBy(x => x.Volume)).ToList();
+        
+        var sortedItems = (biggerFirst ? _items.OrderByDescending(x=>x.Volume) : _items.OrderBy(x=>x.Volume)).ToList();
 
         foreach (var bin in sortedBins)
         {
@@ -41,7 +55,7 @@ public class Packer
     {
         var fitted = false;
 
-        if (!_bins.Any())
+        if (!bin.Items.Any())
         {
             var wasPut = bin.PutItem(item, Position.StartingPosition);
 
@@ -49,20 +63,19 @@ public class Packer
             {
                 bin.UnfittedItems.Add(item);
             }
-            
+
             return;
         }
 
-        for (var i = 0; i < 3; i++)
+        foreach (var axis in Enum.GetValues<Axis>())
         {
-            var axis = (Axis) i;
             var itemsInBin = bin.Items;
 
             foreach (var itemInBin in itemsInBin)
             {
                 var pivot = itemInBin.RotatePosition(axis);
 
-                if (bin.PutItem(itemInBin, pivot))
+                if (bin.PutItem(item, pivot))
                 {
                     fitted = true;
 

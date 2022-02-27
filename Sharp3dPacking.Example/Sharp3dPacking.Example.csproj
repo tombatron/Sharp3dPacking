@@ -5,7 +5,10 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Sharp3dPacking</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Sharp3dPacking\Sharp3dPacking.csproj" />
+    </ItemGroup>
 
 </Project>
