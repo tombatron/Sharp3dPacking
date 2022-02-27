@@ -7,7 +7,22 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>Sharp3dPacking</Title>
         <Authors>Tom Hanks</Authors>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+        <Version>1.0.0</Version>
+        <PackageVersion>1.0.0</PackageVersion>
         <Description>Library for performing 3D bin packing.</Description>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryUrl>https://github.com/tombatron/Sharp3dPacking</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/tombatron/Sharp3dPacking</PackageProjectUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <PackageLicenseFile>license.txt</PackageLicenseFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="license\license.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+    </ItemGroup>
 </Project>
