@@ -22,6 +22,9 @@ public class Packer
     public void AddBin(string name, decimal width, decimal height, decimal depth, decimal maximumWeightCapacity) =>
         AddBin(new Bin(name, width, height, depth, maximumWeightCapacity));
 
+    public void AddBins(IEnumerable<Bin> bins) =>
+        _bins.AddRange(bins);
+
     public void AddItem(Item item)
     {
         _totalItems++;
@@ -31,6 +34,15 @@ public class Packer
 
     public void AddItem(string name, decimal width, decimal height, decimal depth, decimal weight) =>
         AddItem(new Item(name, width, height, depth, weight));
+
+    public void AddItems(IEnumerable<Item> items)
+    {
+        foreach (var item in items)
+        {
+            AddItem(item);
+        }
+    }
+    
     public void Pack(bool biggerFirst = false, bool distributeItems = false)
     {
         var sortedBins = (biggerFirst ? _bins.OrderByDescending(x => x.Volume) : _bins.OrderBy(x => x.Volume)).ToList();
