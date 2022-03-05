@@ -1,23 +1,60 @@
 ﻿namespace Sharp3dPacking;
 
+/// <summary>
+/// Describes an item that is intended to be placed into a bin. 
+/// </summary>
 public class Item
 {
+    /// <summary>
+    /// Arbitrary name of an item.
+    /// </summary>
     public string Name { get; }
 
+    /// <summary>
+    /// Width of an item.
+    /// </summary>
     public decimal Width { get; }
 
+    /// <summary>
+    /// Height of an item.
+    /// </summary>
     public decimal Height { get; }
 
+    /// <summary>
+    /// Depth of an item.
+    /// </summary>
     public decimal Depth { get; }
 
+    /// <summary>
+    /// Weight of an item.
+    /// </summary>
     public decimal Weight { get; }
 
+    /// <summary>
+    /// Volume of an item. This is computed during object initialization. 
+    /// </summary>
     public decimal Volume { get; }
 
+    /// <summary>
+    /// How the item is currently rotated.
+    /// </summary>
     public RotationType RotationType { get; internal set; }
 
+    /// <summary>
+    /// The present position of the item.
+    /// </summary>
     public Position Position { get; internal set; }
 
+    /// <summary>
+    /// Primary constructor of the `Item` class.
+    /// </summary>
+    /// <param name="name">Arbitrary name of the item being placed into a bin.</param>
+    /// <param name="width">The width of the item.</param>
+    /// <param name="height">The height of the item.</param>
+    /// <param name="depth">The depth of the item.</param>
+    /// <param name="weight">The weight of the item.</param>
+    /// <param name="rotationType">How is the item currently rotated. Defaults to "Depth x Width x Height"</param>
+    /// <param name="position">The current position of the item. Defaults to 0,0,0</param>
     public Item(string name, decimal width, decimal height, decimal depth, decimal weight,
         RotationType rotationType = RotationType.DepthHeightWidth, Position? position = default)
     {
@@ -33,16 +70,26 @@ public class Item
         Position = position ?? Position.StartingPosition;
     }
 
+    /// <summary>
+    /// [Override]
+    /// Outputs a string representation of the `Item` class in the following format:
+    ///
+    /// "{Name}({Width}x{Height}x{Depth}, weight: {Weight}) pos({Position}) rt({RotationType}:{(int)RotationType}) vol({Volume})
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() =>
         $"{Name}({Width}x{Height}x{Depth}, weight: {Weight}) pos({Position}) rt({RotationType}:{(int)RotationType}) vol({Volume})";
 
     /// <summary>
     /// This method will map the dimensions (width, height, and depth) of the item to output variables
     /// based on the orientation (RotationType) of the item.
+    ///
+    /// The intent behind leveraging the out parameters here is to attempt to reduce allocations by NOT allocating
+    /// a tuple, object, or collection. Perhaps a "ref struct" would be better?
     /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="depth"></param>
+    /// <param name="width">[out]</param>
+    /// <param name="height">[out]</param>
+    /// <param name="depth">[out]</param>
     internal void RotatedDimensions(out decimal width, out decimal height, out decimal depth)
     {
         switch (RotationType)
@@ -107,34 +154,37 @@ public class Item
     {
         RotatedDimensions(out var width, out var height, out var depth);
 
-        switch (axis)
+        return axis switch
         {
-            case Axis.Width:
-                return new Position(Position.X + width, Position.Y, Position.Z);
-            case Axis.Height:
-                return new Position(Position.X, Position.Y + height, Position.Z);
-            case Axis.Depth:
-                return new Position(Position.X, Position.Y, Position.Z + depth);
-            default:
-                return Position.StartingPosition;
-        }
+            Axis.Width => new Position(Position.X + width, Position.Y, Position.Z),
+            Axis.Height => new Position(Position.X, Position.Y + height, Position.Z),
+            Axis.Depth => new Position(Position.X, Position.Y, Position.Z + depth),
+            _ => Position.StartingPosition
+        };
     }
 
+    /// <summary>
+    /// Convenience method for getting position values based on a provided axis.
+    /// </summary>
+    /// <param name="axis"></param>
+    /// <returns></returns>
     internal decimal PositionAtAxis(Axis axis)
     {
-        switch (axis)
+        return axis switch
         {
-            case Axis.Width:
-                return Position.X;
-            case Axis.Height:
-                return Position.Y;
-            case Axis.Depth:
-                return Position.Z;
-            default:
-                return default;
-        }
+            Axis.Width => Position.X,
+            Axis.Height => Position.Y,
+            Axis.Depth => Position.Z,
+            _ => default
+        };
     }
 
+    /// <summary>
+    /// Similar to the method `PositionAtAxis` this method will consider the current orientation
+    /// of the item before returning the request position at axis.
+    /// </summary>
+    /// <param name="axis"></param>
+    /// <returns></returns>
     internal decimal RotatedPositionAtAxis(Axis axis)
     {
         RotatedDimensions(out var width, out var height, out var depth);
@@ -143,24 +193,27 @@ public class Item
         {
             case Axis.Width:
                 return width;
-                // return Width;
             case Axis.Height:
                 return height;
-                // return Height;
             case Axis.Depth:
                 return depth;
-                // return Depth;
             default:
                 return default;
         }
     }
 
+    /// <summary>
+    /// Determine if this instance of the `Item` class "intersects" with the provided instance
+    /// of the `Item` class. 
+    /// </summary>
+    /// <param name="item">Instance to test against.</param>
+    /// <returns></returns>
     public bool IntersectsWith(Item item) =>
         DoRectanglesIntersect(this, item, Axis.Width, Axis.Height) &&
         DoRectanglesIntersect(this, item, Axis.Height, Axis.Depth) &&
         DoRectanglesIntersect(this, item, Axis.Width, Axis.Depth);
 
-    internal static bool DoRectanglesIntersect(Item item1, Item item2, Axis axis1, Axis axis2)
+    private static bool DoRectanglesIntersect(Item item1, Item item2, Axis axis1, Axis axis2)
     {
         var d1a1 = item1.RotatedPositionAtAxis(axis1);
         var cx1 = item1.PositionAtAxis(axis1) + d1a1 / 2;

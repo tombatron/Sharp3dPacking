@@ -33,13 +33,14 @@ public class Bin
     
     public bool PutItem(Item item, Position position)
     {
-        var fit = false;
-        var validItemPosition = item.Position;
+        var fit = false; // Items are first assumed to NOT fit.
+        
+        var initialItemPosition = item.Position; // Store initial item position just in case... 
 
-        item.Position = position;
+        item.Position = position; // Assign the candidate item a new position...
 
-        foreach (var rotationType in Enum.GetValues<RotationType>())
-        {
+        foreach (var rotationType in Enum.GetValues<RotationType>()) // We're going to rotate the item in all six
+        {                                                            // directions to see if we can make it fit...
             item.RotationType = rotationType;
 
             item.RotatedDimensions(out var width, out var height, out var depth);
@@ -77,7 +78,7 @@ public class Bin
 
             if (!fit)
             {
-                item.Position = validItemPosition;
+                item.Position = initialItemPosition;
             }
 
             return fit;
@@ -85,7 +86,7 @@ public class Bin
 
         if (!fit)
         {
-            item.Position = validItemPosition;
+            item.Position = initialItemPosition;
         }
         
         return fit;
