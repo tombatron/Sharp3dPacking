@@ -74,7 +74,7 @@ public class Item
     /// [Override]
     /// Outputs a string representation of the `Item` class in the following format:
     ///
-    /// "{Name}({Width}x{Height}x{Depth}, weight: {Weight}) pos({Position}) rt({RotationType}:{(int)RotationType}) vol({Volume})
+    /// {Name}({Width}x{Height}x{Depth}, weight: {Weight}) pos({Position}) rt({RotationType}:{(int)RotationType}) vol({Volume})
     /// </summary>
     /// <returns></returns>
     public override string ToString() =>
