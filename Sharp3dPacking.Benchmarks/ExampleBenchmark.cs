@@ -6,13 +6,13 @@ namespace Sharp3dPacking.Benchmarks;
 [MemoryDiagnoser]
 public class ExampleProjectBenchmark
 {
-    private IEnumerable<Item> Items;
-    private IEnumerable<Bin> Bins;
+    private IEnumerable<Item>? _items;
+    private IEnumerable<Bin>? _bins;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
-        Items = new List<Item>()
+        _items = new List<Item>()
         {
             new("50g [powder 1]", 3.9370m, 1.9685m, 1.9685m, 1),
             new("50g [powder 2]", 3.9370m, 1.9685m, 1.9685m, 2),
@@ -25,7 +25,7 @@ public class ExampleProjectBenchmark
             new("250g [powder 9]", 7.8740m, 3.9370m, 1.9685m, 9)
         };
         
-        Bins = new List<Bin>()
+        _bins = new List<Bin>()
         {
             new("small-envelope", 11.5m, 6.125m, 0.25m, 10),
             new("large-envelope", 15m, 12m, 0.75m, 15),
@@ -38,13 +38,17 @@ public class ExampleProjectBenchmark
     }
 
     [Benchmark]
-    public (ReadOnlyCollection<Bin> Bins, ReadOnlyCollection<Item> Items, int TotalItems, int UnfitItems)
-        ExampleCase()
+    public (ReadOnlyCollection<Bin> Bins, ReadOnlyCollection<Item> Items, int TotalItems, int UnfitItems) ExampleCase()
     {
+        if (_bins is null || _items is null)
+        {
+            throw new Exception("Gonna need some bins and items.");
+        }
+
         var packer = new Packer();
 
-        packer.AddBins(Bins);
-        packer.AddItems(Items);
+        packer.AddBins(_bins);
+        packer.AddItems(_items);
 
         packer.Pack();
 
