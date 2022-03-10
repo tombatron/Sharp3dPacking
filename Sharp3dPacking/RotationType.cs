@@ -35,3 +35,15 @@ public enum RotationType
     /// </summary>
     WidthDepthHeight
 }
+
+internal static class RotationTypes
+{
+    internal static readonly RotationType[] Instances = {
+        RotationType.WidthHeightDepth,
+        RotationType.HeightWidthDepth,
+        RotationType.HeightDepthWidth,
+        RotationType.DepthHeightWidth,
+        RotationType.DepthWidthHeight,
+        RotationType.WidthDepthHeight
+    };
+}

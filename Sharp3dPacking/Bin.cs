@@ -83,7 +83,7 @@ public class Bin
 
         item.Position = position; // Assign the candidate item a new position...
 
-        foreach (var rotationType in Enum.GetValues<RotationType>()) // We're going to rotate the item in all six
+        foreach (var rotationType in RotationTypes.Instances) // We're going to rotate the item in all six
         {                                                            // directions to see if we can make it fit...
             item.RotationType = rotationType;
 
